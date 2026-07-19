@@ -53,7 +53,7 @@ export class Ch3Session extends Session {
 
   /* ---------- pointer ---------- */
 
-  onDown(w: Vec, s: Vec) {
+  onDown(_w: Vec, s: Vec) {
     if (this.level.designer && !this.warped) {
       const hit = this.widget.hit(this.engine, s)
       if (hit !== null) {

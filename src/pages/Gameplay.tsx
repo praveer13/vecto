@@ -71,7 +71,7 @@ function plainWords(level: LevelDef): string {
     case 6:
       return 'Build the machine that undoes the warp'
     default:
-      return level.goal
+      return 'Drag, snap, win!'
   }
 }
 
@@ -203,6 +203,7 @@ export default function Gameplay() {
   }
   const quitToMap = () => {
     useGameStore.getState().setResumeLevel(level.id)
+    sessionRef.current?.setPaused(false)
     sessionRef.current?.persist()
     navigate('/map')
   }

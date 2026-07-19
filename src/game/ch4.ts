@@ -109,7 +109,7 @@ export class Ch4Session extends Session {
 
   /* ---------- pointer ---------- */
 
-  onDown(w: Vec, s: Vec) {
+  onDown(_w: Vec, s: Vec) {
     if (this.level.designer && !this.warped) {
       const wdg = this.widgets[this.editMachine]
       const hit = wdg.hit(this.engine, s)
@@ -302,8 +302,8 @@ export class Ch4Session extends Session {
 
   equation(): string {
     const c = this.homes[0] ?? vec(1, 0)
-    const labels = this.order.map((i) => this.level.machines[i]?.label ?? '?').join('·')
-    return `${labels}·${fmtVec(c)} = ${fmtVec(apply(this.product(), c))}`
+    const labels = this.order.map((i) => this.level.machines[i]?.label ?? '?').join('→')
+    return `${labels}: ${fmtVec(c)} → ${fmtVec(apply(this.product(), c))}`
   }
 
   serialize(): unknown {

@@ -23,6 +23,6 @@ export function createSession(canvas: HTMLCanvasElement, level: LevelDef, events
       return new Ch6Session(canvas, level, events)
     default:
       // chapters outside this screen's scope (5/boss) fall back to Ch1 mechanics
-      return new Ch1Session(canvas, { ...level, chapter: 1 } as never, events)
+      return new Ch1Session(canvas, level as never, events)
   }
 }

@@ -351,14 +351,14 @@ function ResultsBody({
 
       {/* ---------- try-again variant ---------- */}
       {tryAgain ? (
-        <div className="z-10 mt-8 flex w-full max-w-[300px] flex-col gap-2">
-          <NeonButton onClick={(e) => { e.stopPropagation(); navigate(replayTo) }}>
+        <div className="z-10 mt-8 flex w-full max-w-[300px] flex-col gap-2" onClick={(e) => e.stopPropagation()}>
+          <NeonButton onClick={() => navigate(replayTo)}>
             <RotateCcw size={18} /> Try again
           </NeonButton>
-          <NeonButton variant="secondary" onClick={(e) => { e.stopPropagation(); navigate(`${replayTo}&hint=1`) }}>
+          <NeonButton variant="secondary" onClick={() => navigate(`${replayTo}&hint=1`)}>
             <Eye size={18} /> Watch a hint ghost
           </NeonButton>
-          <NeonButton variant="ghost" onClick={(e) => { e.stopPropagation(); navigate('/map') }}>
+          <NeonButton variant="ghost" onClick={() => navigate('/map')}>
             <MapIcon size={18} /> Map
           </NeonButton>
         </div>
@@ -397,13 +397,7 @@ function ResultsBody({
 
           {/* ---------- XP bar ---------- */}
           {phase >= 3 && (
-            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="z-10 mt-4 w-full max-w-[300px]">
-              <div className="mb-1 flex items-center justify-between">
-                <span className="text-caption font-extrabold uppercase text-low">LV {lvlAfter} · {selectPlayerTitle(lvlAfter)}</span>
-                <span className="font-mono text-mono-s font-bold text-low">{selectXpIntoLevel(payload.xpAfter)}/100</span>
-              </div>
-              <XpBar ratio={phase >= 3 ? ratioTo : selectXpIntoLevel(payload.xpBefore) / 100} shimmer={ratioTo >= 1} />
-            </motion.div>
+            <XpSection payload={payload} lvlAfter={lvlAfter} leveledUp={leveledUp} ratioTo={ratioTo} />
           )}
 
           {/* ---------- level-up interlude ---------- */}
@@ -485,5 +479,55 @@ function ResultsBody({
         </>
       )}
     </div>
+  )
+}
+
+
+/* ---------------- XP bar with fill tween + level-up reset ---------------- */
+function XpSection({
+  payload,
+  lvlAfter,
+  leveledUp,
+  ratioTo,
+}: {
+  payload: ResultPayload
+  lvlAfter: number
+  leveledUp: boolean
+  ratioTo: number
+}) {
+  const [ratio, setRatio] = useState(() => selectXpIntoLevel(payload.xpBefore) / 100)
+  const [done, setDone] = useState(false)
+  useEffect(() => {
+    const timers: number[] = []
+    if (leveledUp) {
+      timers.push(window.setTimeout(() => setRatio(1), 250))
+      timers.push(
+        window.setTimeout(() => {
+          setRatio(ratioTo)
+          setDone(true)
+        }, 1350),
+      )
+    } else {
+      timers.push(
+        window.setTimeout(() => {
+          setRatio(ratioTo)
+          setDone(true)
+        }, 250),
+      )
+    }
+    return () => timers.forEach(clearTimeout)
+  }, [leveledUp, ratioTo])
+  return (
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="z-10 mt-4 w-full max-w-[300px]">
+      <div className="mb-1 flex items-center justify-between">
+        <span className="text-caption font-extrabold uppercase text-low">
+          LV {lvlAfter} · {selectPlayerTitle(lvlAfter)}
+        </span>
+        <span className="font-mono text-mono-s font-bold text-low">
+          {done ? selectXpIntoLevel(payload.xpAfter) : selectXpIntoLevel(payload.xpBefore)}/100
+        </span>
+      </div>
+      <XpBar ratio={ratio} shimmer={done} />
+    </motion.div>
   )
 }

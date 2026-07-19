@@ -101,7 +101,7 @@ export class Ch2Session extends Session {
     return add(this.basePos, scale(w, s || 0.35))
   }
 
-  onDown(w: Vec, s: Vec) {
+  onDown(_w: Vec, s: Vec) {
     const nw = this.level.newWind
     if (nw && !this.newWindTaken) {
       const sp = this.engine.worldToScreen(nw.at)
@@ -266,7 +266,7 @@ export class Ch2Session extends Session {
       hasV: this.hasV,
       newWindActive: !!this.level.newWind && !this.newWindTaken,
       collected: this.level.cumulative ? this.nextIdx : this.collected.size,
-      colB: { ...this.vVec },
+      colB: this.hasV ? { ...this.vVec } : undefined,
     }
   }
 
@@ -324,7 +324,7 @@ export class Ch2Session extends Session {
 
   /* ---------- draw ---------- */
 
-  private drawRibbon(eng: Engine, wind: Vec, s: number, color: string, spring: Spring, idx: 0 | 1) {
+  private drawRibbon(eng: Engine, _wind: Vec, s: number, color: string, spring: Spring, idx: 0 | 1) {
     const P = eng.palette
     const from = eng.worldToScreen(this.basePos)
     const tip = { x: spring.x, y: spring.y }

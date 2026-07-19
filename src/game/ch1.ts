@@ -178,6 +178,10 @@ export class Ch1Session extends Session {
       this.events.onToast(this.level.coach)
       return
     }
+    if (this.level.mustUseAll && this.tray.length > 0) {
+      this.events.onToast('Use every arrow!')
+      return
+    }
     this.commitMove()
     if (this.lockOn()) {
       const path = this.joints()

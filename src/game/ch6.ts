@@ -40,6 +40,7 @@ export class Ch6Session extends Session {
     const b = this.contentBounds()
     this.vexPos = vec((b.minX + b.maxX) / 2, b.minY - 0.6)
     this.widget.title = 'REWIND COLUMNS'
+    if (!level.collapse) this.engine.warpCur = { ...level.m }
   }
 
   get collapse(): boolean {
@@ -78,7 +79,7 @@ export class Ch6Session extends Session {
 
   /* ---------- pointer ---------- */
 
-  onDown(w: Vec, s: Vec) {
+  onDown(_w: Vec, s: Vec) {
     if (!this.collapse && !this.rewinding) {
       const hit = this.widget.hit(this.engine, s)
       if (hit !== null) {
