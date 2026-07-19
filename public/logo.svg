@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" width="800" height="300" fill="none">
+  <defs>
+    <linearGradient id="vecto-grad" x1="0" y1="0" x2="800" y2="300" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFB020"/>
+      <stop offset="0.45" stop-color="#FFD166"/>
+      <stop offset="1" stop-color="#22D3EE"/>
+    </linearGradient>
+    <filter id="vecto-glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="14" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <!-- soft outer glow -->
+  <g stroke="#FFB020" stroke-width="34" stroke-linecap="round" stroke-linejoin="round" opacity="0.35" filter="url(#vecto-glow)">
+    <path d="M60 78 L108 232 L156 78"/>
+    <path d="M292 78 L216 78 L216 232 L292 232 M216 155 L276 155"/>
+    <path d="M438 102 A78 78 0 1 0 438 208"/>
+    <path d="M474 78 L574 78 M524 78 L524 232"/>
+    <path d="M658 78 A77 77 0 1 0 658 232 A77 77 0 1 0 658 78"/>
+  </g>
+  <!-- thin cyan outline -->
+  <g stroke="#22D3EE" stroke-width="42" stroke-linecap="round" stroke-linejoin="round" opacity="0.9">
+    <path d="M60 78 L108 232 L156 78"/>
+    <path d="M292 78 L216 78 L216 232 L292 232 M216 155 L276 155"/>
+    <path d="M438 102 A78 78 0 1 0 438 208"/>
+    <path d="M474 78 L574 78 M524 78 L524 232"/>
+    <path d="M658 78 A77 77 0 1 0 658 232 A77 77 0 1 0 658 78"/>
+  </g>
+  <!-- amber->cyan gradient fill -->
+  <g stroke="url(#vecto-grad)" stroke-width="32" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M60 78 L108 232 L156 78"/>
+    <path d="M292 78 L216 78 L216 232 L292 232 M216 155 L276 155"/>
+    <path d="M438 102 A78 78 0 1 0 438 208"/>
+    <path d="M474 78 L574 78 M524 78 L524 232"/>
+    <path d="M658 78 A77 77 0 1 0 658 232 A77 77 0 1 0 658 78"/>
+  </g>
+  <!-- arrowhead crowning the V (tip-to-tail arrow) -->
+  <path d="M156 78 L132 96 L146 104 L150 118 L162 106 L176 100 Z" fill="#FFD166" stroke="#22D3EE" stroke-width="4" stroke-linejoin="round" filter="url(#vecto-glow)"/>
+</svg>
