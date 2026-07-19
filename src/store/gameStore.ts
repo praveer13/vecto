@@ -25,6 +25,8 @@ export interface SettingsState {
   reduceMotion: boolean
   colorblind: ColorblindMode
   mathLabels: boolean // show real math terms instead of stealth names
+  ghostHints: boolean // ghost-hand hint overlay
+  snapStrength: 'gentle' | 'normal' | 'sticky' // drag snap assist
 }
 
 export interface GameState {
@@ -78,6 +80,8 @@ export const DEFAULT_SETTINGS: SettingsState = {
   reduceMotion: false,
   colorblind: 'off',
   mathLabels: false,
+  ghostHints: true,
+  snapStrength: 'normal',
 }
 
 const INITIAL = {

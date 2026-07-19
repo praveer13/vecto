@@ -6,7 +6,7 @@
  * this file owns all DOM chrome.
  */
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router'
+import { Navigate, useNavigate, useSearchParams } from 'react-router'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeftRight,
@@ -84,6 +84,8 @@ export default function Gameplay() {
   const freshKey = params.get('r') ?? ''
   const storeCurrent = useGameStore((s) => s.currentLevel)
   const levelId = daily ? dailyLevelId(new Date().toISOString().slice(0, 10)) : (params.get('level') ?? storeCurrent)
+  // Chapter 5 (Eigen Keep) plays in the boss arena — redirect all its nodes
+  if (levelId === 'boss' || /^5(-|$)/.test(levelId ?? '')) return <Navigate to="/boss" replace />
   const level = getLevel(levelId)
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -121,6 +123,8 @@ export default function Gameplay() {
       const newBadges = badgesForLevel(level.id, level.finale).filter((b) => !s.badges.includes(b))
       const xpBefore = s.xp
       s.completeLevel(level.id, stars, gearsEarned, xpEarned)
+      // map finale nodes carry "X-f" ids — mirror completion so zone gates open
+      if (level.finale) s.completeLevel(`${level.chapter}-f`, stars, 0, 0)
       if (cardId) s.unlockCard(cardId)
       newBadges.forEach((b) => s.unlockBadge(b))
       if (daily) s.completeDaily(20)

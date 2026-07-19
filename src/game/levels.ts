@@ -381,6 +381,9 @@ export const PLAYABLE_CHAPTERS = [1, 2, 3, 4, 6]
 
 export function getLevel(id: string | null | undefined): LevelDef {
   if (id && LEVELS[id]) return LEVELS[id]
+  // map finale nodes use "X-f" ids — the chapter's 8th level is the finale
+  const m = id && /^(\d+)-f$/.exec(id)
+  if (m && LEVELS[`${m[1]}-8`]) return LEVELS[`${m[1]}-8`]
   return LEVELS['1-1']
 }
 

@@ -353,15 +353,19 @@ export interface LevelStateLike {
 
 type LevelsLike = Record<string, LevelStateLike | undefined>
 
+/** node cleared check — the boss fight records its win as '5-8', the map node is 'boss' */
+const isNodeCleared = (id: string, levels: LevelsLike): boolean =>
+  !!levels[id]?.completed || (id === 'boss' && !!levels['5-8']?.completed)
+
 /** zone (chapter) is open when the previous chapter's finale is cleared */
 export const isZoneOpen = (chapter: number, levels: LevelsLike): boolean =>
-  chapter <= 1 || !!levels[finaleIdOf(chapter - 1)]?.completed
+  chapter <= 1 || isNodeCleared(finaleIdOf(chapter - 1), levels)
 
 /** node unlocked when zone open and the previous node in the zone is cleared */
 export const isLevelUnlocked = (meta: LevelMeta, levels: LevelsLike): boolean => {
   if (!isZoneOpen(meta.chapter, levels)) return false
   if (meta.index <= 1) return true
-  return !!levels[ZONE_LEVELS[meta.chapter - 1][meta.index - 2].id]?.completed
+  return isNodeCleared(ZONE_LEVELS[meta.chapter - 1][meta.index - 2].id, levels)
 }
 
 /** first unlocked-but-uncleared node in story order; last node when all done */
@@ -379,7 +383,7 @@ export const currentNodeId = (levels: LevelsLike): string => {
         const prevZone = ZONE_LEVELS[zi - 1]
         return prevZone ? prevZone[prevZone.length - 1].id : '1-1'
       }
-      if (!levels[meta.id]?.completed) return meta.id
+      if (!isNodeCleared(meta.id, levels)) return meta.id
     }
   }
   // everything cleared — Vex stands at the final node
