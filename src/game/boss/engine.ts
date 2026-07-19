@@ -550,7 +550,8 @@ export class BossEngine {
       dead: false,
     })
 
-    this.burst(start, eigen ? '#3DFFA2' : '#FFB020', 8, 2.2, 'spark') // muzzle flash
+    const pal = this.palette()
+    this.burst(start, eigen ? pal.mint : pal.amber, 8, 2.2, 'spark') // muzzle flash
     haptics.release()
     bossSfx.launch()
     this.events.onFired()
@@ -684,7 +685,7 @@ export class BossEngine {
     for (let i = 0; i < 4; i++) this.plateAng[i] += dt * (0.5 + i * 0.07)
 
     this.simShots(dt, ph)
-    this.simOrbs(dt, ph)
+    this.simOrbs(dt)
     this.simParticles(dt)
     this.damageNums = this.damageNums.filter((d) => this.time - d.t0 < 0.65)
     if (this.echo && this.time - this.echo.t0 > this.echo.dur) this.echo = null
@@ -752,9 +753,9 @@ export class BossEngine {
         }
       } else if (invuln) {
         // 3a: shots spiral helplessly around the core and fizzle (boss.md §7)
-        if (dist(s.pos, this.bossPos) < this.bossHitR() + 0.4 || s.traveled > 3.4) {
+        if (dist(s.pos, this.bossPos) < this.bossHitR() + 0.4 || s.traveled > 5.5 || s.t > 1.4) {
           s.dead = true
-          this.burst(s.pos, '#8B5CF6', 8, 2.0, 'spark')
+          this.burst(s.pos, this.palette().violet, 8, 2.0, 'spark')
           bossSfx.descend()
         }
       } else if (dist(s.pos, this.bossPos) < this.bossHitR()) {
@@ -902,7 +903,7 @@ export class BossEngine {
     this.volleyAlt = !this.volleyAlt
   }
 
-  private simOrbs(dt: number, ph: (typeof PHASES)[number]) {
+  private simOrbs(dt: number) {
     const pod = this.podPos()
     for (const o of this.orbs) {
       if (o.dead) continue

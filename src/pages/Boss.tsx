@@ -220,9 +220,6 @@ export default function Boss() {
   const [ghostOn, setGhostOn] = useState(false)
 
   const hearts = hud?.hearts ?? 3
-  const ghostHints = useGameStore(
-    (s) => (s.settings as SettingsState & { ghostHints?: boolean }).ghostHints ?? true,
-  )
   const reduceMotion = useGameStore((s) => s.settings.reduceMotion)
 
   /* engine lifecycle */
