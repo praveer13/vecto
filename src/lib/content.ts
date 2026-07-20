@@ -1,3 +1,4 @@
+import { asset } from '@/lib/asset'
 /**
  * VECTO content catalog — canonical game content shared by the Map, Profile
  * and Codex screens (my scope). Pure data + tiny helpers; no React, no store.
@@ -35,7 +36,7 @@ export const ZONES: ZoneMeta[] = [
     accent: '#3DFFA2',
     tagline: 'Chain your first arrows.',
     flavor: 'Every trip is an arrow. Chain them tip-to-tail to go farther.',
-    vignette: '/zone-vector-valley.png',
+    vignette: asset('zone-vector-valley.png'),
     icon: 'i-unit-arrow',
     gateLabel: null,
   },
@@ -45,7 +46,7 @@ export const ZONES: ZoneMeta[] = [
     accent: '#22D3EE',
     tagline: 'Catch the winds.',
     flavor: 'The winds can take you anywhere their mix can reach.',
-    vignette: '/zone-windfall-isles.png',
+    vignette: asset('zone-windfall-isles.png'),
     icon: 'i-wind-ribbon',
     gateLabel: 'Clear Vector Valley to open',
   },
@@ -55,7 +56,7 @@ export const ZONES: ZoneMeta[] = [
     accent: '#FFB020',
     tagline: 'Pull the lever. Mind the landing.',
     flavor: 'The machine moves the whole grid at once — crates just ride along.',
-    vignette: '/zone-warp-works.png',
+    vignette: asset('zone-warp-works.png'),
     icon: 'i-lever',
     gateLabel: 'Clear Windfall Isles to open',
   },
@@ -65,7 +66,7 @@ export const ZONES: ZoneMeta[] = [
     accent: '#8B5CF6',
     tagline: 'Two machines. One truth: order matters.',
     flavor: 'Ride one tower, then the other. Swapping them changes the landing.',
-    vignette: '/zone-tandem-towers.png',
+    vignette: asset('zone-tandem-towers.png'),
     icon: 'i-machine-chip',
     gateLabel: 'Clear Warp Works to open',
   },
@@ -75,7 +76,7 @@ export const ZONES: ZoneMeta[] = [
     accent: '#FF2E93',
     tagline: 'Some paths never bend.',
     flavor: 'EIGEN only fears shots that fly arrow-straight through the warp.',
-    vignette: '/zone-eigen-keep.png',
+    vignette: asset('zone-eigen-keep.png'),
     icon: 'i-turret',
     gateLabel: 'Clear Tandem Towers to open',
   },
@@ -85,7 +86,7 @@ export const ZONES: ZoneMeta[] = [
     accent: '#FF6B4A',
     tagline: 'Undo what was done.',
     flavor: 'Every warp has a rewind — until the area juice runs out.',
-    vignette: '/zone-rewind-rift.png',
+    vignette: asset('zone-rewind-rift.png'),
     icon: 'i-unit-arrow',
     gateLabel: 'Defeat EIGEN to open',
   },
@@ -324,10 +325,10 @@ export interface SkinMeta {
 }
 
 export const SKINS: SkinMeta[] = [
-  { id: 'amber', name: 'Default', img: '/mascot-vex.png', price: 0 },
-  { id: 'nebula', name: 'Nebula', img: '/mascot-vex-nebula.png', price: 200 },
-  { id: 'ember', name: 'Ember', img: '/mascot-vex-ember.png', price: 200 },
-  { id: 'ghost', name: 'Mint Ghost', img: '/mascot-vex-ghost.png', price: 350 },
+  { id: 'amber', name: 'Default', img: asset('mascot-vex.png'), price: 0 },
+  { id: 'nebula', name: 'Nebula', img: asset('mascot-vex-nebula.png'), price: 200 },
+  { id: 'ember', name: 'Ember', img: asset('mascot-vex-ember.png'), price: 200 },
+  { id: 'ghost', name: 'Mint Ghost', img: asset('mascot-vex-ghost.png'), price: 350 },
 ]
 
 export interface TrailMeta {

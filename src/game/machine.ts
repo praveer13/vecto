@@ -4,10 +4,8 @@
  * write matrix columns — gameplay.md §5 Ch3 "designer"), crate/pad matching,
  * and screen-space machine pod / crate / critter drawing.
  */
-import type { Mat, Vec } from './math'
-import { apply, clamp, det, matFromCols, snapTo } from './math'
-import type { Engine } from './engine'
-import { drawCoordLabel } from './engine'
+import type { Engine, Mat, Vec } from '@gridverse/kit/engine'
+import { apply, clamp, det, drawCoordLabel, matFromCols, snapTo } from '@gridverse/kit/engine'
 
 export const SNAP_HALF = 0.5
 export const COL_RANGE = 3

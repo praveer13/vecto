@@ -1,14 +1,17 @@
+import { asset } from '@/lib/asset'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Flame, Check } from 'lucide-react'
-import GridBackdrop from '@/components/game/GridBackdrop'
-import LogoMark from '@/components/game/LogoMark'
-import NeonButton from '@/components/game/NeonButton'
-import Chip from '@/components/game/Chip'
-import XpBar from '@/components/game/XpBar'
-import BottomSheet from '@/components/game/BottomSheet'
-import Toast from '@/components/game/Toast'
+import {
+  GridBackdrop,
+  NeonButton,
+  Chip,
+  XpBar,
+  BottomSheet,
+  Toast,
+} from '@gridverse/kit/ui'
+import { haptics, sfx, cn } from '@gridverse/kit/lib'
 import {
   useGameStore,
   selectTotalStars,
@@ -18,9 +21,75 @@ import {
   selectPlayerTitle,
   chapterName,
 } from '@/store/gameStore'
-import { haptics } from '@/lib/haptics'
-import { sfx } from '@/lib/sfx'
-import { cn } from '@/lib/utils'
+
+/**
+ * LogoMark — the VECTO wordmark as inline SVG (same letterforms as /logo.svg)
+ * so the home entrance can stagger each letter (home.md §2: letters drop from
+ * −24px with spring pop, stagger 60ms). Static contexts should use /logo.svg.
+ */
+const LETTERS = [
+  'M60 78 L108 232 L156 78', // V
+  'M292 78 L216 78 L216 232 L292 232 M216 155 L276 155', // E
+  'M438 102 A78 78 0 1 0 438 208', // C
+  'M474 78 L574 78 M524 78 L524 232', // T
+  'M658 78 A77 77 0 1 0 658 232 A77 77 0 1 0 658 78', // O
+]
+
+const logoPop = { type: 'spring', stiffness: 420, damping: 24 } as const
+
+function LogoMark({
+  width = 240,
+  stagger = false,
+  className,
+}: {
+  width?: number
+  /** per-letter drop-in entrance (home first visit) */
+  stagger?: boolean
+  className?: string
+}) {
+  return (
+    <svg
+      viewBox="0 0 800 300"
+      width={width}
+      height={(width * 300) / 800}
+      fill="none"
+      className={className}
+      role="img"
+      aria-label="VECTO"
+    >
+      <defs>
+        <linearGradient id="lm-grad" x1="0" y1="0" x2="800" y2="300" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#FFB020" />
+          <stop offset="0.45" stopColor="#FFD166" />
+          <stop offset="1" stopColor="#22D3EE" />
+        </linearGradient>
+      </defs>
+      {LETTERS.map((d, i) => (
+        <motion.g
+          key={i}
+          initial={stagger ? { opacity: 0, y: -24 } : false}
+          animate={stagger ? { opacity: 1, y: 0 } : undefined}
+          transition={stagger ? { ...logoPop, delay: 0.4 + i * 0.06 } : undefined}
+        >
+          <path d={d} stroke="#22D3EE" strokeWidth={42} strokeLinecap="round" strokeLinejoin="round" opacity={0.9} />
+          <path d={d} stroke="url(#lm-grad)" strokeWidth={32} strokeLinecap="round" strokeLinejoin="round" />
+        </motion.g>
+      ))}
+      {/* arrowhead crowning the V */}
+      <motion.path
+        d="M156 78 L132 96 L146 104 L150 118 L162 106 L176 100 Z"
+        fill="#FFD166"
+        stroke="#22D3EE"
+        strokeWidth={4}
+        strokeLinejoin="round"
+        initial={stagger ? { opacity: 0, scale: 0 } : false}
+        animate={stagger ? { opacity: 1, scale: 1 } : undefined}
+        transition={stagger ? { ...logoPop, delay: 0.78 } : undefined}
+        style={{ transformOrigin: '156px 96px' }}
+      />
+    </svg>
+  )
+}
 
 /**
  * Home / Title screen — home.md. The arcade attract mode: animated grid
@@ -133,14 +202,14 @@ export default function Home() {
     >
       {/* Section 1 — animated backdrop */}
       <img
-        src="/nebula-bg.png"
+        src={asset('nebula-bg.png')}
         alt=""
         aria-hidden
         className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover"
       />
       {reduceMotion ? (
         <img
-          src="/grid-horizon.png"
+          src={asset('grid-horizon.png')}
           alt=""
           aria-hidden
           className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-3/4 w-full object-cover opacity-80"
@@ -187,7 +256,7 @@ export default function Home() {
                 transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
               >
                 <motion.img
-                  src="/mascot-vex.png"
+                  src={asset('mascot-vex.png')}
                   alt="Vex, your arrow-spark buddy"
                   width={96}
                   height={96}
@@ -251,7 +320,7 @@ export default function Home() {
                 animate={reduceMotion ? undefined : { x: [0, 4, 0] }}
                 transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
               >
-                <use href="/icons-game.svg#i-unit-arrow" />
+                <use href={asset('icons-game.svg#i-unit-arrow')} />
               </motion.svg>
               {hasProgress ? 'CONTINUE' : 'PLAY'}
             </NeonButton>
@@ -283,7 +352,7 @@ export default function Home() {
           >
             <span className="relative h-[72px] w-[88px] shrink-0 overflow-hidden rounded-sm border border-gold/70">
               <img
-                src="/daily-drift.png"
+                src={asset('daily-drift.png')}
                 alt="Vex surfing a comet across the grid"
                 className={cn('h-full w-full object-cover', dailyDone && 'saturate-[0.6]')}
               />
@@ -384,7 +453,7 @@ export default function Home() {
             <Chip tone="gold">+40 gears</Chip>
           </div>
           <div className="overflow-hidden rounded-md border border-line">
-            <img src="/daily-drift.png" alt="" className="h-28 w-full object-cover" />
+            <img src={asset('daily-drift.png')} alt="" className="h-28 w-full object-cover" />
           </div>
           <p className="text-body font-semibold text-mid">
             One grid. One puzzle. Today's drift uses {mechanic}.

@@ -1,3 +1,4 @@
+import { asset } from '@/lib/asset'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -19,14 +20,10 @@ import {
 } from 'lucide-react'
 import { Switch } from '@/components/ui/switch'
 import { Slider } from '@/components/ui/slider'
-import BottomSheet from '@/components/game/BottomSheet'
-import IconButton from '@/components/game/IconButton'
-import NeonButton from '@/components/game/NeonButton'
-import Toast from '@/components/game/Toast'
-import { useGameStore, type SettingsState, type ColorblindMode } from '@/store/gameStore'
-import { haptics } from '@/lib/haptics'
-import { sfx } from '@/lib/sfx'
-import { cn } from '@/lib/utils'
+import { BottomSheet, IconButton, NeonButton, Toast } from '@gridverse/kit/ui'
+import { useGameStore } from '@/store/gameStore'
+import { haptics, sfx, cn } from '@gridverse/kit/lib'
+import type { KitSettings, ColorblindMode } from '@gridverse/kit/lib'
 import { PALETTES, SWATCH_KEYS } from '@/game/boss/palette'
 
 /**
@@ -39,16 +36,12 @@ import { PALETTES, SWATCH_KEYS } from '@/game/boss/palette'
 const outExpo = [0.16, 1, 0.3, 1] as [number, number, number, number]
 const sheetSpring = { type: 'spring', stiffness: 320, damping: 28 } as const
 
-/** fields the settings slice doesn't declare yet — written through updateSettings anyway */
-type ExtraSettings = { ghostHints?: boolean; snapStrength?: 'gentle' | 'normal' | 'sticky' }
-const extra = (s: SettingsState) => s as SettingsState & ExtraSettings
-
 /* ---------------- persistence (sliders debounced 150ms, settings.md §1) ---------------- */
 
 function useSettingsWriter() {
   const updateSettings = useGameStore((s) => s.updateSettings)
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const pending = useRef<Partial<SettingsState>>({})
+  const timer = useRef<number | null>(null)
+  const pending = useRef<Partial<KitSettings>>({})
   useEffect(
     () => () => {
       if (timer.current) {
@@ -59,7 +52,7 @@ function useSettingsWriter() {
     [],
   )
   return useCallback(
-    (patch: Partial<SettingsState>, debounce = false) => {
+    (patch: Partial<KitSettings>, debounce = false) => {
       if (!debounce) {
         updateSettings(patch)
         return
@@ -574,8 +567,8 @@ export default function Settings() {
     }, 400)
   }
 
-  const ghostHints = extra(settings).ghostHints ?? true
-  const snapStrength = extra(settings).snapStrength ?? 'normal'
+  const ghostHints = settings.ghostHints ?? true
+  const snapStrength = settings.snapStrength ?? 'normal'
 
   return (
     <div className="flex flex-1 flex-col">
@@ -765,7 +758,7 @@ export default function Settings() {
               <NeonSwitch
                 checked={ghostHints}
                 ariaLabel="Ghost hints on or off"
-                onChange={(v) => write({ ghostHints: v } as Partial<SettingsState>)}
+                onChange={(v) => write({ ghostHints: v })}
               />
             }
           />
@@ -775,7 +768,7 @@ export default function Settings() {
                 id="snap"
                 ariaLabel="Snap strength"
                 value={snapStrength}
-                onChange={(v) => write({ snapStrength: v } as Partial<SettingsState>)}
+                onChange={(v) => write({ snapStrength: v })}
                 options={[
                   { id: 'gentle', label: 'Gentle' },
                   { id: 'normal', label: 'Normal' },
@@ -788,7 +781,7 @@ export default function Settings() {
 
         {/* ============ Section 4 — About ============ */}
         <motion.div variants={sectionItem} className="flex flex-col items-center gap-1.5 py-4 text-center">
-          <img src="/logo.svg" alt="VECTO" className="w-24 opacity-60" />
+          <img src={asset('logo.svg')} alt="VECTO" className="w-24 opacity-60" />
           <p className="font-mono text-mono-s text-low">VECTO v1.0.0</p>
           <p className="text-caption font-extrabold uppercase text-low">Tiny arrows. Big adventures.</p>
           <p className="text-body font-semibold text-mid">Made for math lovers who’d rather play.</p>
@@ -898,7 +891,7 @@ export default function Settings() {
             >
               <div className="flex flex-col items-center gap-3 text-center">
                 <motion.img
-                  src="/mascot-vex.png"
+                  src={asset('mascot-vex.png')}
                   alt="Vex looking worried"
                   className="h-20 w-20"
                   animate={{ rotate: [-8, -4, -8] }}

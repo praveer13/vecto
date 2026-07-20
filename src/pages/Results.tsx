@@ -1,3 +1,4 @@
+import { asset } from '@/lib/asset'
 /**
  * VECTO Results / Rewards — results.md.
  * Route: /results (payload handed over via sessionStorage 'vecto-result-v1').
@@ -13,11 +14,8 @@ import { loadResult, getLevel } from '@/game/levels'
 import type { ResultPayload } from '@/game/levels'
 import { BADGES, CARD_CATALOG, CHAPTER_CARDS } from '@/game/cards'
 import type { ConceptCard } from '@/game/cards'
-import { clamp } from '@/game/math'
-import Chip from '@/components/game/Chip'
-import NeonButton from '@/components/game/NeonButton'
-import StarMeter from '@/components/game/StarMeter'
-import XpBar from '@/components/game/XpBar'
+import { clamp } from '@gridverse/kit/engine'
+import { Chip, NeonButton, StarMeter, XpBar } from '@gridverse/kit/ui'
 import {
   chapterName,
   selectPlayerLevel,
@@ -25,20 +23,18 @@ import {
   selectXpIntoLevel,
   useGameStore,
 } from '@/store/gameStore'
-import { haptics } from '@/lib/haptics'
-import { sfx } from '@/lib/sfx'
-import { cn } from '@/lib/utils'
+import { haptics, sfx, cn } from '@gridverse/kit/lib'
 
 const pop = { type: 'spring', stiffness: 420, damping: 24 } as const
 const gentle = { type: 'spring', stiffness: 180, damping: 22 } as const
 
 const ZONE_IMG: Record<number, string> = {
-  1: '/zone-vector-valley.png',
-  2: '/zone-windfall-isles.png',
-  3: '/zone-warp-works.png',
-  4: '/zone-tandem-towers.png',
-  5: '/zone-eigen-keep.png',
-  6: '/zone-rewind-rift.png',
+  1: asset('zone-vector-valley.png'),
+  2: asset('zone-windfall-isles.png'),
+  3: asset('zone-warp-works.png'),
+  4: asset('zone-tandem-towers.png'),
+  5: asset('zone-eigen-keep.png'),
+  6: asset('zone-rewind-rift.png'),
 }
 const CH_TONE = { 1: 'mint', 2: 'cyan', 3: 'amber', 4: 'violet', 5: 'magenta', 6: 'coral' } as const
 
@@ -166,7 +162,7 @@ function ConceptCardFlip({ card, delay = 0 }: { card: ConceptCard; delay?: numbe
               boxShadow: `0 0 24px ${card.accent}44`,
             }}
           >
-            <img src="/card-back.png" alt="" className="pointer-events-none absolute inset-0 h-full w-full rounded-lg object-cover opacity-25" draggable={false} />
+            <img src={asset('card-back.png')} alt="" className="pointer-events-none absolute inset-0 h-full w-full rounded-lg object-cover opacity-25" draggable={false} />
             <p className="relative text-[10px] font-extrabold uppercase tracking-widest" style={{ color: card.accent }}>
               nerd note
             </p>
@@ -237,7 +233,7 @@ export default function Results() {
   if (!payload) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-4 px-8 text-center">
-        <img src="/mascot-vex.png" alt="Vex" className="h-24 w-24 opacity-80" />
+        <img src={asset('mascot-vex.png')} alt="Vex" className="h-24 w-24 opacity-80" />
         <p className="text-body font-semibold text-mid">No run to report — the Gridverse awaits!</p>
         <NeonButton onClick={() => navigate('/map')}>
           <MapIcon size={18} /> To the map
@@ -323,7 +319,7 @@ function ResultsBody({
 
       {/* Vex */}
       <motion.img
-        src={tryAgain ? '/mascot-vex.png' : '/mascot-vex-celebrate.png'}
+        src={tryAgain ? asset('mascot-vex.png') : asset('mascot-vex-celebrate.png')}
         alt={tryAgain ? 'Vex catching its breath' : 'Vex celebrating'}
         initial={{ scale: 0, rotate: tryAgain ? 0 : -180 }}
         animate={{ scale: 1, rotate: 0 }}

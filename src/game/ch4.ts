@@ -4,17 +4,14 @@
  * order (non-commutativity); MERGE fuses them into the product matrix;
  * 4-8 is a designer level (write both machines' columns). (gameplay.md §5 Ch4)
  */
-import type { Mat, Vec } from './math'
-import { IDENTITY, apply, fmtVec, mul, vec } from './math'
-import type { Engine } from './engine'
-import { drawCoordLabel, drawPad } from './engine'
-import { Session } from './session'
-import type { HintGesture, SessionEvents, UiState } from './session'
+import type { Engine, Mat, Vec } from '@gridverse/kit/engine'
+import { IDENTITY, apply, drawCoordLabel, drawPad, fmtVec, mul, vec } from '@gridverse/kit/engine'
+import { Session, type HintGesture, type SessionEvents } from '@gridverse/kit/session'
 import type { Ch4Level } from './levels'
 import { saveMidLevel } from './levels'
 import { BasisWidget, cratesOnPads, drawCrate, drawMachinePod } from './machine'
-import { haptics } from '@/lib/haptics'
-import { sfx } from '@/lib/sfx'
+import { haptics } from '@gridverse/kit/lib'
+import { sfx } from '@gridverse/kit/lib'
 
 const GRAB_PX = 28
 const ROT90: Mat = { a: 0, b: 1, c: -1, d: 0 }
@@ -25,7 +22,17 @@ interface WarpStep {
   holdAfter: number
 }
 
-export class Ch4Session extends Session {
+interface Ch4Extras {
+  order: number[]
+  merged: boolean
+  canMerge: boolean
+  editMachine: number
+  colA: Vec
+  colB: Vec
+  warped: boolean
+}
+
+export class Ch4Session extends Session<Ch4Level, Ch4Extras> {
   declare level: Ch4Level
   homes: Vec[]
   order: number[]
@@ -43,7 +50,7 @@ export class Ch4Session extends Session {
   afterQueue: (() => void) | null = null
   vexPos: Vec = vec(0, 0)
 
-  constructor(canvas: HTMLCanvasElement, level: Ch4Level, events: SessionEvents) {
+  constructor(canvas: HTMLCanvasElement, level: Ch4Level, events: SessionEvents<Ch4Extras>) {
     super(canvas, level, events)
     this.level = level
     this.homes = level.crates.map((c) => ({ ...c }))
@@ -287,7 +294,7 @@ export class Ch4Session extends Session {
     }
   }
 
-  uiExtras(): Partial<UiState> {
+  uiExtras(): Ch4Extras {
     const wdg = this.widgets[this.editMachine]
     return {
       order: [...this.order],
@@ -429,7 +436,7 @@ export class Ch4Session extends Session {
       const label = this.order.map((i) => this.level.machines[i]?.label).reverse().join('·')
       drawMachinePod(eng, eng.cssW / 2, 112, label, P.mint, 0, { small: true })
     }
-    eng.drawVex(eng.screenToWorld({ x: eng.cssW / 2 + (n === 3 ? 128 : 108), y: 52 }), 0.8)
+    eng.drawMascot(eng.screenToWorld({ x: eng.cssW / 2 + (n === 3 ? 128 : 108), y: 52 }), 0.8)
     if (this.dragCrate >= 0) {
       const h = this.homes[this.dragCrate]
       drawCoordLabel(eng, h, fmtVec(h), P.violet, 40)

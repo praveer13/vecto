@@ -1,17 +1,11 @@
+import { asset } from '@/lib/asset'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router'
 import { motion, AnimatePresence, useMotionValue, useTransform, animate } from 'framer-motion'
 import type { AnimationPlaybackControls } from 'framer-motion'
 import { Lock, X, Crosshair, Sparkles, ChevronUp, Skull, BookOpen } from 'lucide-react'
-import TopBar from '@/components/game/TopBar'
-import BottomSheet from '@/components/game/BottomSheet'
-import NeonButton from '@/components/game/NeonButton'
-import IconButton from '@/components/game/IconButton'
-import Chip from '@/components/game/Chip'
-import StarMeter from '@/components/game/StarMeter'
-import Toast from '@/components/game/Toast'
-import XpBar from '@/components/game/XpBar'
-import { useGameStore } from '@/store/gameStore'
+import { TopBar, BottomSheet, NeonButton, IconButton, Chip, StarMeter, Toast, XpBar } from '@gridverse/kit/ui'
+import { useGameStore, selectPlayerLevel } from '@/store/gameStore'
 import {
   ZONES,
   ZONE_LEVELS,
@@ -23,9 +17,7 @@ import {
   zoneStars,
 } from '@/lib/content'
 import type { LevelMeta } from '@/lib/content'
-import { haptics } from '@/lib/haptics'
-import { sfx } from '@/lib/sfx'
-import { cn } from '@/lib/utils'
+import { haptics, sfx, cn } from '@gridverse/kit/lib'
 
 /**
  * The Gridverse — world map (chapters.md). Route /map.
@@ -114,7 +106,7 @@ const VexMarker = memo(function VexMarker({ still }: { still: boolean }) {
   useEffect(() => clear, [])
   return (
     <motion.img
-      src="/mascot-vex.png"
+      src={asset('mascot-vex.png')}
       alt="Vex is here"
       draggable={false}
       className="pointer-events-auto absolute -top-14 left-1/2 h-14 w-14 select-none"
@@ -344,7 +336,7 @@ function LevelSheet({
             transition={{ delay: 0.15, duration: 0.28, ease: outExpo }}
           >
             <svg width="22" height="22" style={{ color: zone.accent }} aria-hidden>
-              <use href={`/icons-game.svg#${zone.icon}`} />
+              <use href={asset(`icons-game.svg#${zone.icon}`)} />
             </svg>
             <p className="text-body font-semibold text-hi">{level.goal}</p>
           </motion.div>
@@ -368,7 +360,7 @@ function LevelSheet({
             <Chip tone="mint">
               +{level.xp} XP · +{level.gears}
               <svg width="12" height="12" aria-hidden>
-                <use href="/icons-game.svg#i-gear-currency" />
+                <use href={asset('icons-game.svg#i-gear-currency')} />
               </svg>
             </Chip>
           </motion.div>
@@ -382,7 +374,7 @@ function LevelSheet({
               transition={{ delay: 0.25, duration: 0.28, ease: outExpo }}
             >
               <motion.img
-                src="/card-back.png"
+                src={asset('card-back.png')}
                 alt=""
                 className="h-12 w-9 rounded-sm border border-violet/50 object-cover"
                 animate={{ opacity: [0.5, 1, 0.5] }}
@@ -439,6 +431,9 @@ export default function Map() {
   const [searchParams] = useSearchParams()
   const levels = useGameStore((s) => s.levels)
   const ownedCards = useGameStore((s) => s.cards)
+  const gears = useGameStore((s) => s.gears)
+  const xp = useGameStore((s) => s.xp)
+  const playerLevel = selectPlayerLevel(xp)
   const reduceMotion = useGameStore((s) => s.settings.reduceMotion)
 
   const viewportRef = useRef<HTMLDivElement>(null)
@@ -758,7 +753,14 @@ export default function Map() {
   /* ----- render ----- */
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <TopBar title="THE GRIDVERSE" />
+      <TopBar
+        title="THE GRIDVERSE"
+        gears={gears}
+        avatarSrc={asset('mascot-vex.png')}
+        level={playerLevel}
+        onProfile={() => navigate('/profile')}
+        onSettings={() => navigate('/settings')}
+      />
 
       <div
         ref={viewportRef}
@@ -850,7 +852,7 @@ export default function Map() {
                   style={{ top: y, height: BOSS_GATE_H }}
                 >
                   <img
-                    src="/boss-eigen.png"
+                    src={asset('boss-eigen.png')}
                     alt="EIGEN, the Unmoved"
                     className="h-[110px] w-[110px] object-contain"
                     style={
@@ -926,7 +928,7 @@ export default function Map() {
                   <Chip tone="gold" className="shrink-0">
                     {stars}/24
                     <svg width="11" height="11" aria-hidden>
-                      <use href="/icons-game.svg#i-star" />
+                      <use href={asset('icons-game.svg#i-star')} />
                     </svg>
                   </Chip>
                 </button>
@@ -962,7 +964,7 @@ export default function Map() {
                                   <img src={c.img} alt="" className="h-full w-full object-cover" />
                                 ) : (
                                   <>
-                                    <img src="/card-back.png" alt="" className="h-full w-full object-cover opacity-50" />
+                                    <img src={asset('card-back.png')} alt="" className="h-full w-full object-cover opacity-50" />
                                     <span className="absolute inset-0 flex items-center justify-center font-display text-h2 text-low">?</span>
                                   </>
                                 )}
@@ -1061,7 +1063,7 @@ export default function Map() {
                       <Skull className="h-7 w-7" style={{ color: cleared ? '#FFD166' : accent }} />
                     ) : n.meta.finale ? (
                       <svg width="26" height="26" style={{ color: cleared ? '#FFD166' : accent }} aria-hidden>
-                        <use href={`/icons-game.svg#${ZONES[n.meta.chapter - 1].icon}`} />
+                        <use href={asset(`icons-game.svg#${ZONES[n.meta.chapter - 1].icon}`)} />
                       </svg>
                     ) : (
                       <span className="font-mono text-mono-m font-bold text-hi">{n.meta.index}</span>

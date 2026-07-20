@@ -1,16 +1,13 @@
+import { asset } from '@/lib/asset'
 import { useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MapPin } from 'lucide-react'
-import BottomSheet from '@/components/game/BottomSheet'
-import Chip from '@/components/game/Chip'
-import Toast from '@/components/game/Toast'
+import { BottomSheet, Chip, Toast } from '@gridverse/kit/ui'
 import { useGameStore } from '@/store/gameStore'
 import { CARDS, ZONES } from '@/lib/content'
 import type { CardMeta } from '@/lib/content'
-import { haptics } from '@/lib/haptics'
-import { sfx } from '@/lib/sfx'
-import { cn } from '@/lib/utils'
+import { haptics, sfx, cn } from '@gridverse/kit/lib'
 
 /**
  * Concept Codex (profile.md §4) — shared by the /codex route and the
@@ -289,7 +286,7 @@ export default function CodexSection({
                   </>
                 ) : (
                   <>
-                    <img src="/card-back.png" alt="" loading="lazy" className="h-full w-full object-cover opacity-40" />
+                    <img src={asset('card-back.png')} alt="" loading="lazy" className="h-full w-full object-cover opacity-40" />
                     <span className="absolute inset-0 flex items-center justify-center font-display text-h2 text-low">?</span>
                   </>
                 )}

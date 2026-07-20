@@ -4,21 +4,24 @@
  * warp: pos = M(t)·home. Designer levels: drag î′/ĵ′ in the basis widget to
  * write the matrix columns directly. (gameplay.md §5 Ch3)
  */
-import type { Mat, Vec } from './math'
-import { IDENTITY, apply, det, fmtVec, vec } from './math'
-import type { Engine } from './engine'
-import { drawCoordLabel, drawPad, drawWall } from './engine'
-import { Session } from './session'
-import type { HintGesture, SessionEvents, UiState } from './session'
+import type { Engine, Mat, Vec } from '@gridverse/kit/engine'
+import { IDENTITY, apply, det, drawCoordLabel, drawPad, drawWall, fmtVec, vec } from '@gridverse/kit/engine'
+import { Session, type HintGesture, type SessionEvents } from '@gridverse/kit/session'
 import type { Ch3Level } from './levels'
 import { saveMidLevel } from './levels'
 import { BasisWidget, cratesOnPads, drawCrate, drawMachinePod } from './machine'
-import { haptics } from '@/lib/haptics'
-import { sfx } from '@/lib/sfx'
+import { haptics } from '@gridverse/kit/lib'
+import { sfx } from '@gridverse/kit/lib'
 
 const GRAB_PX = 28
 
-export class Ch3Session extends Session {
+interface Ch3Extras {
+  colA: Vec
+  colB: Vec
+  warped: boolean
+}
+
+export class Ch3Session extends Session<Ch3Level, Ch3Extras> {
   declare level: Ch3Level
   homes: Vec[]
   widget = new BasisWidget()
@@ -29,7 +32,7 @@ export class Ch3Session extends Session {
   leverAnim: { to: number; t0: number } | null = null
   vexPos: Vec = vec(0, 0)
 
-  constructor(canvas: HTMLCanvasElement, level: Ch3Level, events: SessionEvents) {
+  constructor(canvas: HTMLCanvasElement, level: Ch3Level, events: SessionEvents<Ch3Extras>) {
     super(canvas, level, events)
     this.level = level
     this.homes = level.crates.map((c) => ({ ...c }))
@@ -217,7 +220,7 @@ export class Ch3Session extends Session {
     }
   }
 
-  uiExtras(): Partial<UiState> {
+  uiExtras(): Ch3Extras {
     const M = this.M()
     return {
       colA: { x: M.a, y: M.b },
@@ -288,7 +291,7 @@ export class Ch3Session extends Session {
     this.widget.draw(eng, { accent: this.level.designer ? P.amber : P.line })
     // machine pod, top center (screen space)
     drawMachinePod(eng, eng.cssW / 2, 56, 'M', P.amber, this.leverT, { selected: this.state === 'animating' })
-    eng.drawVex(eng.screenToWorld({ x: eng.cssW / 2 + 58, y: 52 }), 0.8)
+    eng.drawMascot(eng.screenToWorld({ x: eng.cssW / 2 + 58, y: 52 }), 0.8)
     if (this.dragCrate >= 0) {
       const h = this.homes[this.dragCrate]
       drawCoordLabel(eng, h, fmtVec(h), P.amber, 40)

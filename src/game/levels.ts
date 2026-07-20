@@ -2,8 +2,8 @@
  * VECTO level data — chapters 1–4 & 6 per gameplay.md §5 level tables.
  * Coordinates are world units (math convention: +y up). Bounds ≈ ±6.5u.
  */
-import type { Mat, Vec } from './math'
-import { mat, vec } from './math'
+import type { Mat, Vec } from '@gridverse/kit/engine'
+import { mat, vec } from '@gridverse/kit/engine'
 
 export interface Wall {
   x: number

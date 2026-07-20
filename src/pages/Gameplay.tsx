@@ -26,8 +26,8 @@ import {
   Wrench,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
-import type { Vec } from '@/game/math'
-import { clamp, fmt } from '@/game/math'
+import type { Vec } from '@gridverse/kit/engine'
+import { clamp, fmt } from '@gridverse/kit/engine'
 import type { LevelDef } from '@/game/levels'
 import {
   clearMidLevel,
@@ -41,22 +41,36 @@ import {
   starsFor,
 } from '@/game/levels'
 import { badgesForLevel } from '@/game/cards'
-import type { Session, UiState } from '@/game/session'
-import { createSession } from '@/game/createSession'
+import type { Session, UiState } from '@gridverse/kit/session'
+import { createSession } from '@/game/sessions'
 import { Ch1Session } from '@/game/ch1'
-import Chip from '@/components/game/Chip'
-import IconButton from '@/components/game/IconButton'
-import NeonButton from '@/components/game/NeonButton'
-import StarMeter from '@/components/game/StarMeter'
-import EquationChip from '@/components/game/EquationChip'
-import Toast from '@/components/game/Toast'
+import { Chip, IconButton, NeonButton, StarMeter, EquationChip, Toast } from '@gridverse/kit/ui'
 import { useGameStore, chapterName } from '@/store/gameStore'
-import { haptics } from '@/lib/haptics'
-import { cn } from '@/lib/utils'
+import { haptics, cn } from '@gridverse/kit/lib'
 
 const CH_TONE = { 1: 'mint', 2: 'cyan', 3: 'amber', 4: 'violet', 6: 'coral' } as const
 const CH_ICON: Record<number, LucideIcon> = { 1: MoveRight, 2: Wind, 3: Wrench, 4: Layers, 6: RotateCcw }
 const pop = { type: 'spring', stiffness: 420, damping: 24 } as const
+
+/** Vecto-specific VectoUiState extras consumed by the chapter docks. */
+type VectoUiExtras = {
+  tray?: Vec[]
+  chainLen?: number
+  windA?: number
+  windB?: number
+  hasV?: boolean
+  newWindActive?: boolean
+  collected?: number
+  colA?: Vec
+  colB?: Vec
+  det?: number
+  order?: number[]
+  merged?: boolean
+  editMachine?: number
+  warped?: boolean
+  canMerge?: boolean
+}
+type VectoUiState = UiState<VectoUiExtras>
 
 function plainWords(level: LevelDef): string {
   switch (level.chapter) {
@@ -89,8 +103,8 @@ export default function Gameplay() {
   const level = getLevel(levelId)
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const sessionRef = useRef<Session | null>(null)
-  const [ui, setUi] = useState<UiState | null>(null)
+  const sessionRef = useRef<Session<LevelDef, VectoUiExtras> | null>(null)
+  const [ui, setUi] = useState<VectoUiState | null>(null)
   const [intro, setIntro] = useState(true)
   const [paused, setPaused] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
@@ -414,8 +428,8 @@ function Dock({
   onToast,
 }: {
   level: LevelDef
-  ui: UiState | null
-  sessionRef: React.RefObject<Session | null>
+  ui: VectoUiState | null
+  sessionRef: React.RefObject<Session<LevelDef, VectoUiExtras> | null>
   playing: boolean
   onToast: (m: string) => void
 }) {
@@ -478,8 +492,8 @@ function DockCh1({
   playing,
   go,
 }: {
-  ui: UiState | null
-  sessionRef: React.RefObject<Session | null>
+  ui: VectoUiState | null
+  sessionRef: React.RefObject<Session<LevelDef, VectoUiExtras> | null>
   playing: boolean
   go: () => void
 }) {
@@ -603,8 +617,8 @@ function DockCh2({
   go,
 }: {
   level: LevelDef
-  ui: UiState | null
-  sessionRef: React.RefObject<Session | null>
+  ui: VectoUiState | null
+  sessionRef: React.RefObject<Session<LevelDef, VectoUiExtras> | null>
   playing: boolean
   go: () => void
 }) {
@@ -792,7 +806,7 @@ function DockMachine({
   go,
 }: {
   level: LevelDef
-  ui: UiState | null
+  ui: VectoUiState | null
   playing: boolean
   go: () => void
 }) {
@@ -835,8 +849,8 @@ function DockCh4({
   onToast,
 }: {
   level: LevelDef
-  ui: UiState | null
-  sessionRef: React.RefObject<Session | null>
+  ui: VectoUiState | null
+  sessionRef: React.RefObject<Session<LevelDef, VectoUiExtras> | null>
   playing: boolean
   go: () => void
   onToast: (m: string) => void
@@ -957,7 +971,7 @@ function DockCh6({
   go,
 }: {
   level: LevelDef
-  ui: UiState | null
+  ui: VectoUiState | null
   playing: boolean
   go: () => void
 }) {

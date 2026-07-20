@@ -6,21 +6,25 @@
  * set-piece: the grid lies flattened on a line, REWIND fizzles, and the
  * critters are dragged home along the line. (gameplay.md §5 Ch6)
  */
-import type { Mat, Vec } from './math'
-import { IDENTITY, apply, det, fmt, isIdentity, mul, projectOntoLine, snapTo, vec } from './math'
-import type { Engine } from './engine'
-import { drawCoordLabel, drawPad } from './engine'
-import { Session } from './session'
-import type { HintGesture, SessionEvents, UiState } from './session'
+import type { Engine, Mat, Vec } from '@gridverse/kit/engine'
+import { IDENTITY, apply, det, drawCoordLabel, drawPad, fmt, isIdentity, mul, projectOntoLine, snapTo, vec } from '@gridverse/kit/engine'
+import { Session, type HintGesture, type SessionEvents } from '@gridverse/kit/session'
 import type { Ch6Level } from './levels'
 import { saveMidLevel } from './levels'
 import { BasisWidget, PAD_TOL, drawCritter, drawMachinePod } from './machine'
-import { haptics } from '@/lib/haptics'
-import { sfx } from '@/lib/sfx'
+import { haptics } from '@gridverse/kit/lib'
+import { sfx } from '@gridverse/kit/lib'
 
 const GRAB_PX = 30
 
-export class Ch6Session extends Session {
+interface Ch6Extras {
+  colA: Vec
+  colB: Vec
+  det: number
+  collected: number
+}
+
+export class Ch6Session extends Session<Ch6Level, Ch6Extras> {
   declare level: Ch6Level
   widget = new BasisWidget()
   /** collapse mode: current slid positions (start at M·home) */
@@ -33,7 +37,7 @@ export class Ch6Session extends Session {
   saved = new Set<number>()
   vexPos: Vec = vec(0, 0)
 
-  constructor(canvas: HTMLCanvasElement, level: Ch6Level, events: SessionEvents) {
+  constructor(canvas: HTMLCanvasElement, level: Ch6Level, events: SessionEvents<Ch6Extras>) {
     super(canvas, level, events)
     this.level = level
     this.slide = level.homes.map((h) => apply(level.m, h))
@@ -272,7 +276,7 @@ export class Ch6Session extends Session {
     }
   }
 
-  uiExtras(): Partial<UiState> {
+  uiExtras(): Ch6Extras {
     return {
       colA: { ...this.widget.c1 },
       colB: { ...this.widget.c2 },
@@ -357,6 +361,6 @@ export class Ch6Session extends Session {
     drawMachinePod(eng, eng.cssW / 2, 56, 'R⁻¹', P.coral, this.leverT, { selected: this.rewinding })
     // basis widget (hidden in collapse mode — no machine can help)
     if (!this.collapse) this.widget.draw(eng, { accent: P.coral })
-    eng.drawVex(eng.screenToWorld({ x: eng.cssW / 2 + 66, y: 52 }), 0.8)
+    eng.drawMascot(eng.screenToWorld({ x: eng.cssW / 2 + 66, y: 52 }), 0.8)
   }
 }

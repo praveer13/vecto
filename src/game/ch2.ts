@@ -4,22 +4,28 @@
  * arc sliders. Reachable-fan parallelogram = span (collapses to a line when
  * winds are parallel, 2-6). (gameplay.md §5 Ch2)
  */
-import type { Vec } from './math'
-import { add, clamp, dist, fmt, fmtScalar, fmtVec, scale, snapTo, vec } from './math'
-import type { Engine } from './engine'
-import { Spring, drawCoordLabel, drawPad } from './engine'
-import { Session } from './session'
-import type { HintGesture, SessionEvents, UiState } from './session'
+import type { Engine, Vec } from '@gridverse/kit/engine'
+import { Spring, add, clamp, dist, drawCoordLabel, drawPad, fmt, fmtScalar, fmtVec, scale, snapTo, vec } from '@gridverse/kit/engine'
+import { Session, type HintGesture, type SessionEvents } from '@gridverse/kit/session'
 import type { Ch2Level } from './levels'
 import { saveMidLevel } from './levels'
-import { haptics } from '@/lib/haptics'
-import { sfx } from '@/lib/sfx'
+import { haptics } from '@gridverse/kit/lib'
+import { sfx } from '@gridverse/kit/lib'
 
 const LOCK_DIST = 0.45
 const MAX_SCALE = 3
 const GRAB_PX = 30
 
-export class Ch2Session extends Session {
+interface Ch2Extras {
+  windA: number
+  windB: number
+  hasV: boolean
+  newWindActive: boolean
+  collected: number
+  colB?: Vec
+}
+
+export class Ch2Session extends Session<Ch2Level, Ch2Extras> {
   declare level: Ch2Level
   a = 0
   b = 0
@@ -34,7 +40,7 @@ export class Ch2Session extends Session {
   newWindTaken = false
   private lastFanSweep = 0
 
-  constructor(canvas: HTMLCanvasElement, level: Ch2Level, events: SessionEvents) {
+  constructor(canvas: HTMLCanvasElement, level: Ch2Level, events: SessionEvents<Ch2Extras>) {
     super(canvas, level, events)
     this.level = level
     this.vVec = level.v ? { ...level.v } : { ...level.u }
@@ -259,7 +265,7 @@ export class Ch2Session extends Session {
     }
   }
 
-  uiExtras(): Partial<UiState> {
+  uiExtras(): Ch2Extras {
     return {
       windA: this.a,
       windB: this.b,
@@ -469,6 +475,6 @@ export class Ch2Session extends Session {
     if (this.hasV) this.drawRibbon(eng, this.vVec, this.b, P.cyan, this.springs[1], 1)
 
     drawPad(eng, this.basePos, { rU: 0.4, color: P.amber })
-    eng.drawVex(this.vexPos, 0.9)
+    eng.drawMascot(this.vexPos, 0.9)
   }
 }

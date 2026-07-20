@@ -1,15 +1,11 @@
+import { asset } from '@/lib/asset'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Pause, RotateCcw, Map as MapIcon, Settings as SettingsIcon, Hand, Crosshair, X } from 'lucide-react'
-import IconButton from '@/components/game/IconButton'
-import NeonButton from '@/components/game/NeonButton'
-import EquationChip from '@/components/game/EquationChip'
-import Toast from '@/components/game/Toast'
-import { useGameStore, type SettingsState } from '@/store/gameStore'
-import { haptics } from '@/lib/haptics'
-import { sfx } from '@/lib/sfx'
-import { cn } from '@/lib/utils'
+import { IconButton, NeonButton, EquationChip, Toast } from '@gridverse/kit/ui'
+import { useGameStore } from '@/store/gameStore'
+import { haptics, sfx, cn } from '@gridverse/kit/lib'
 import { BossEngine, type HudState } from '@/game/boss/engine'
 import { clamp } from '@/game/boss/math2'
 
@@ -246,9 +242,7 @@ export default function Boss() {
 
     // first-time ghost-hand demo (never blocks input; replayable from pause)
     const lv = useGameStore.getState().levels
-    const hintsOn =
-      (useGameStore.getState().settings as SettingsState & { ghostHints?: boolean }).ghostHints ??
-      true
+    const hintsOn = useGameStore.getState().settings.ghostHints
     if (hintsOn && !lv['5-8']?.completed && !lv['boss']?.completed) setGhostOn(true)
 
     return () => {
@@ -345,7 +339,7 @@ export default function Boss() {
                 style={i < hearts ? { filter: 'drop-shadow(0 0 6px rgba(255,107,74,.5))' } : undefined}
                 aria-hidden
               >
-                <use href="/icons-game.svg#i-heart" />
+                <use href={asset('icons-game.svg#i-heart')} />
               </motion.svg>
             ))}
           </div>
@@ -495,7 +489,7 @@ export default function Boss() {
         {failed && (
           <CenterModal key="fail" onClose={() => {}} ariaLabel="The Keep holds" dismissable={false}>
             <div className="flex flex-col items-center gap-3 text-center">
-              <img src="/mascot-vex.png" alt="Vex, powered down" className="h-20 w-20 opacity-50 grayscale" />
+              <img src={asset('mascot-vex.png')} alt="Vex, powered down" className="h-20 w-20 opacity-50 grayscale" />
               <h2 className="font-display text-h1 text-hi">THE KEEP HOLDS…</h2>
               <p className="text-body font-semibold text-mid">this time.</p>
               <div className="mt-2 flex w-full flex-col gap-2">

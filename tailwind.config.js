@@ -5,7 +5,7 @@
 //   accents: cyan mint violet magenta amber coral danger gold
 module.exports = {
   darkMode: ["class"],
-  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}', './node_modules/@gridverse/kit/dist/**/*.js'],
   theme: {
     extend: {
       colors: {

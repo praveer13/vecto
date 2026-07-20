@@ -4,16 +4,13 @@
  * links to reorder (lift → ghost insertion → snap), drag off to return.
  * GO hops Vex along the chain. Walls block crossing chains. (gameplay.md §5 Ch1)
  */
-import type { Vec } from './math'
-import { add, dist, fmtVec, segIntersectsRect, vec } from './math'
-import type { Engine } from './engine'
-import { Spring, drawArrow, drawCoordLabel, drawPad, drawWall } from './engine'
-import { Session } from './session'
-import type { HintGesture, SessionEvents, UiState } from './session'
+import type { Engine, Vec } from '@gridverse/kit/engine'
+import { Spring, add, dist, drawArrow, drawCoordLabel, drawPad, drawWall, fmtVec, segIntersectsRect, vec } from '@gridverse/kit/engine'
+import { Session, type HintGesture, type SessionEvents } from '@gridverse/kit/session'
 import type { Ch1Level } from './levels'
 import { saveMidLevel } from './levels'
-import { haptics } from '@/lib/haptics'
-import { sfx } from '@/lib/sfx'
+import { haptics } from '@gridverse/kit/lib'
+import { sfx } from '@gridverse/kit/lib'
 
 const ORIGIN = vec(0, 0)
 const LOCK_DIST = 0.4
@@ -26,7 +23,12 @@ interface LinkDrag {
   insertIdx: number | null
 }
 
-export class Ch1Session extends Session {
+interface Ch1Extras {
+  tray: Vec[]
+  chainLen: number
+}
+
+export class Ch1Session extends Session<Ch1Level, Ch1Extras> {
   declare level: Ch1Level
   tray: Vec[]
   chain: Vec[] = []
@@ -37,7 +39,7 @@ export class Ch1Session extends Session {
   dash: { path: Vec[]; d: number; total: number } | null = null
   private lastTrail = 0
 
-  constructor(canvas: HTMLCanvasElement, level: Ch1Level, events: SessionEvents) {
+  constructor(canvas: HTMLCanvasElement, level: Ch1Level, events: SessionEvents<Ch1Extras>) {
     super(canvas, level, events)
     this.level = level
     this.tray = level.cards.map((c) => ({ ...c }))
@@ -246,7 +248,7 @@ export class Ch1Session extends Session {
     return b
   }
 
-  uiExtras(): Partial<UiState> {
+  uiExtras(): Ch1Extras {
     return { tray: this.tray.map((t) => ({ ...t })), chainLen: this.chain.length }
   }
 
@@ -360,6 +362,6 @@ export class Ch1Session extends Session {
       })
       drawCoordLabel(eng, add(showTail, d.vec), fmtVec(d.vec), P.amber, 44)
     }
-    eng.drawVex(this.vexPos)
+    eng.drawMascot(this.vexPos)
   }
 }

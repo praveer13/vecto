@@ -1,13 +1,9 @@
+import { asset } from '@/lib/asset'
 import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router'
 import { motion, AnimatePresence, useInView } from 'framer-motion'
 import { Check, ChevronRight, Flame, Pencil, RotateCcw, Settings } from 'lucide-react'
-import TopBar from '@/components/game/TopBar'
-import BottomSheet from '@/components/game/BottomSheet'
-import NeonButton from '@/components/game/NeonButton'
-import Chip from '@/components/game/Chip'
-import GearCounter from '@/components/game/GearCounter'
-import Toast from '@/components/game/Toast'
+import { TopBar, BottomSheet, NeonButton, Chip, GearCounter, Toast } from '@gridverse/kit/ui'
 import CodexSection from '@/pages/CodexSection'
 import {
   useGameStore,
@@ -26,9 +22,7 @@ import {
   TOTAL_STARS,
 } from '@/lib/content'
 import type { BadgeMeta, SkinMeta, TrailMeta } from '@/lib/content'
-import { haptics } from '@/lib/haptics'
-import { sfx } from '@/lib/sfx'
-import { cn } from '@/lib/utils'
+import { haptics, sfx, cn } from '@gridverse/kit/lib'
 
 /**
  * Profile — route /profile (profile.md). The trophy room: player header with
@@ -380,7 +374,14 @@ export default function Profile() {
 
   return (
     <div className="flex flex-1 flex-col">
-      <TopBar title="PLAYER ONE" />
+      <TopBar
+        title="PLAYER ONE"
+        gears={gears}
+        avatarSrc={asset('mascot-vex.png')}
+        level={playerLevel}
+        onProfile={() => navigate('/profile')}
+        onSettings={() => navigate('/settings')}
+      />
 
       <main className="flex flex-1 flex-col gap-7 px-4 py-4">
         {/* ============ Section 1 — Player Header ============ */}
@@ -415,7 +416,7 @@ export default function Profile() {
               />
             </svg>
             <img
-              src={SKIN_SRC[activeSkin] ?? '/mascot-vex.png'}
+              src={SKIN_SRC[activeSkin] ?? asset('mascot-vex.png')}
               alt="Vex avatar"
               className={cn('absolute inset-0 m-auto h-[72px] w-[72px] rounded-full', !reduceMotion && 'animate-bob')}
             />
@@ -614,7 +615,7 @@ export default function Profile() {
               <AnimatePresence mode="wait">
                 <motion.img
                   key={previewSkin}
-                  src={SKIN_SRC[previewSkin] ?? '/mascot-vex.png'}
+                  src={SKIN_SRC[previewSkin] ?? asset('mascot-vex.png')}
                   alt={`Vex preview — ${SKINS.find((s) => s.id === previewSkin)?.name ?? 'Default'}`}
                   className="relative mb-6 h-32 w-32"
                   initial={{ scale: 0.6, opacity: 0 }}
@@ -670,7 +671,7 @@ export default function Profile() {
                       <Chip tone="gold">
                         {s.price}
                         <svg width="11" height="11" aria-hidden>
-                          <use href="/icons-game.svg#i-gear-currency" />
+                          <use href={asset('icons-game.svg#i-gear-currency')} />
                         </svg>
                       </Chip>
                     )}
@@ -727,7 +728,7 @@ export default function Profile() {
                       <Chip tone="gold">
                         {t.price}
                         <svg width="11" height="11" aria-hidden>
-                          <use href="/icons-game.svg#i-gear-currency" />
+                          <use href={asset('icons-game.svg#i-gear-currency')} />
                         </svg>
                       </Chip>
                     )}
@@ -790,7 +791,7 @@ export default function Profile() {
               <Chip tone="gold">
                 {buyItem.meta.price}
                 <svg width="12" height="12" aria-hidden>
-                  <use href="/icons-game.svg#i-gear-currency" />
+                  <use href={asset('icons-game.svg#i-gear-currency')} />
                 </svg>
               </Chip>
               <span className="text-body font-semibold text-mid">

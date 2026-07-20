@@ -1,6 +1,7 @@
+import { asset } from '@/lib/asset'
 import { useGameStore } from '@/store/gameStore'
-import { haptics } from '@/lib/haptics'
-import { sfx } from '@/lib/sfx'
+import { haptics } from '@gridverse/kit/lib'
+import { sfx } from '@gridverse/kit/lib'
 import { bossSfx } from './bossSfx'
 import { getPalette, type Palette } from './palette'
 import {
@@ -305,9 +306,9 @@ export class BossEngine {
     const lv = useGameStore.getState().levels
     this.firstEchoFree = !lv['boss']?.completed && !lv['5-8']?.completed
 
-    this.imgBoss.src = '/boss-eigen.png'
-    this.imgVex.src = '/mascot-vex.png'
-    this.imgKeep.src = '/zone-eigen-keep.png'
+    this.imgBoss.src = asset('boss-eigen.png')
+    this.imgVex.src = asset('mascot-vex.png')
+    this.imgKeep.src = asset('zone-eigen-keep.png')
 
     this.resize()
     window.addEventListener('resize', this.resize)
